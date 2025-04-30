@@ -14,6 +14,9 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=Montserrat:wght@700;800;900&amp;display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -350,6 +353,23 @@
           brightness(1)
           contrast(1.2);
         mix-blend-mode: normal;
+      }
+
+      /* Alertify Custom Styles */
+      .alertify-notifier .ajs-message {
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-family: "Poppins", sans-serif;
+      }
+      .alertify-notifier .ajs-message.ajs-success {
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0.9));
+      }
+      .alertify-notifier .ajs-message.ajs-error {
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.9), rgba(236, 72, 153, 0.9));
       }
     </style>
     <style>
@@ -2166,16 +2186,18 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-8 px-4 border-t border-slate-800">
-      <div class="container mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="mb-4 md:mb-0">
-            <a href="#" class="text-2xl font-bold gradient-text">Portfolio</a>
+    <footer class="relative py-20 px-4 bg-gradient-to-b from-slate-900/50 to-slate-900/90 overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(circle_at_70%_60%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+      <div class="container mx-auto relative">
+        
+
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center gap-2 mb-4">
+            <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></span>
+            <p class="text-gray-400">Designed & Built by Nareshbrabha</p>
+            <span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></span>
           </div>
-          <div class="text-gray-400 text-center md:text-right">
-            <p>© 2023 Nareshbrabha. All rights reserved.</p>
-            <p class="text-sm mt-1">Designed &amp; Built</p>
-          </div>
+          <p class="text-sm text-gray-500">© 2024 All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -2388,13 +2410,42 @@
 
         // Simple validation
         if (!name || !email || !message) {
-          alert("Please fill in all required fields.");
+          alertify.error('Please fill in all required fields.');
           return;
         }
 
-        // In a real application, you would send this data to a server
-        alert("Thank you for your message! I will get back to you soon.");
-        contactForm.reset();
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alertify.error('Please enter a valid email address.');
+          return;
+        }
+
+        const params = {
+          name,
+          email,
+          message,
+        };
+
+        const serviceID = "service_wezxkr4";
+        const templateID = "template_hotnldc";
+
+        // Show loading notification
+        alertify.message('Sending message...');
+
+        emailjs
+          .send(serviceID, templateID, params)
+          .then((res) => {
+            console.log("Email sent successfully!", res.status, res.text);
+            document.getElementById("name").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("message").value = "";
+            alertify.success('Message sent successfully! I will get back to you soon.');
+          })
+          .catch((err) => {
+            console.error("Failed to send email:", err);
+            alertify.error('Failed to send message. Please try again later.');
+          });
       });
 
       // Initialize on page load
@@ -2441,37 +2492,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
       emailjs.init("QSuRk1NXhdYVRNqWA"); // Replace with your EmailJS public key
-    </script>
-
-    <script>
-      function sendMail(event) {
-        event.preventDefault(); // Prevent form submission from reloading the page
-
-        const params = {
-          name: document.getElementById("name").value,
-          email: document.getElementById("email").value,
-          message: document.getElementById("message").value,
-        };
-
-        const serviceID = "service_wezxkr4";
-        const templateID = "template_hotnldc";
-
-        emailjs
-          .send(serviceID, templateID, params)
-          .then((res) => {
-            console.log("Email sent successfully!", res.status, res.text);
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("message").value = "";
-            alert("Message sent successfully!");
-          })
-          .catch((err) => {
-            console.error("Failed to send email:", err);
-            alert(
-              "There was an error sending your message. Please try again later."
-            );
-          });
-      }
     </script>
 
     <iframe
